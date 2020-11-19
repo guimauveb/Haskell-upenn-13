@@ -79,6 +79,7 @@ merge (x:xs) (y:ys) = x : y : merge xs ys
 -- If elem 0 [Int] -> "*"
 -- If elem 1 [Int] -> ++ "*"
 -- First argument is [0..9]
+-- TODO - print \n
 printRow :: [Integer] -> [Integer] -> String
 printRow [] _ = ""
 printRow _ [] = ""
@@ -86,8 +87,11 @@ printRow (x:xs) ys
   | elem x ys == True = "*" ++ printRow xs ys
   | otherwise = " " ++ printRow xs ys
 
--- If a values appears n times, print a "*" for rows n through (n-1)
--- populateRows ::
+-- If v appears n times, print a "*" at n for rows n through (n-1)
+-- row n = row n + row (n+1)
+-- populateRows valuesAtY [0..histoHeight] tmp
+-- TODO - find an elegant way to do this for each y value
+-- merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp) (merge (valuesAtY 2 tmp) (valuesAtY 1 tmp)))
 
 
 histogram :: [Integer] -> [String]
@@ -99,11 +103,17 @@ histogram xs =
   -- tmp = occAndItem (countO(cc xs) (rmDups xs)
   -- printRow valuesAtY n tmp : valuesAtY n+1 tmp
   -- when decrementing Y, append n+1 valuesAtY as well
-    map (\n -> (printRow [0..9] $ valuesAtY n tmp)) $ reverse [0..histoHeight tmp]
+    map (\n -> (printRow [0..9] $ valuesAtY n tmp)) $ reverse [1..histoHeight tmp]
     where tmp = occAndItem (countOcc xs) (rmDups xs)
-  --
-  -- putStrLn "=========\n"
-  -- putStrLn "0123456789"
 
+-- Working solution: TODO - abstract this
+-- y4 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp)  (valuesAtY 2 tmp))
+-- y3 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp)  (valuesAtY 2 tmp))
+-- y1 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp)  (valuesAtY 2 tmp))
+-- y2 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp)  (valuesAtY 2 tmp))
+-- y3 = printRow [0..9] $ merge (valuesAtY 4 tmp) (valuesAtY 3 tmp)
+-- y4 = printRow [0..9] $ valuesAtY 4 tmp
 
+-- putStrLn "=========\n"
+-- putStrLn "0123456789"
 main = undefined
