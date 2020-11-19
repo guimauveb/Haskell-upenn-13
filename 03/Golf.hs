@@ -78,13 +78,16 @@ merge (x:xs) (y:ys) = x : y : merge xs ys
 
 -- If elem 0 [Int] -> "*"
 -- If elem 1 [Int] -> ++ "*"
--- skips xs = map (\n -> everyNth n xs) [1..length xs]
+-- First argument is [0..9]
 printRow :: [Integer] -> [Integer] -> String
 printRow [] _ = ""
 printRow _ [] = ""
 printRow (x:xs) ys
   | elem x ys == True = "*" ++ printRow xs ys
   | otherwise = " " ++ printRow xs ys
+
+-- If a values appears n times, print a "*" for rows n through (n-1)
+-- populateRows ::
 
 
 histogram :: [Integer] -> [String]
