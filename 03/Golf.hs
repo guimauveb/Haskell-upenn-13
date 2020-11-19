@@ -64,5 +64,4 @@ histogram (x:xs)
   | otherwise = ""
 
 
-
 main = undefined
