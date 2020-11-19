@@ -1,6 +1,10 @@
 module Golf where 
 
+import Data.Function(on)
+import Prelude
 import Data.List
+import Data.Ord
+import Control.Lens
 
 -- Exercice 1
 -- Returns every nth element of a list
@@ -41,24 +45,50 @@ countOcc :: (Ord a) => [a] -> [Int]
 countOcc = map length . group . sort 
 
 -- Helper function: returns a tupple of items sharing indexes in two lists
--- Example: oneList ["Hello", "world", "!"] [0, 1, 2] = [("Hello", 0), ("world", 1), ("!", 2)]
-oneList :: [a] -> [b] -> [(a, b)]
-oneList [] _ = []
-oneList (x:xs) (y:ys) = (x,y) : oneList xs ys
+-- Example: oneList (countOcc [1,1,1,5]) (rmDups [1,1,1,5]) = [(3,1), (1,5)]
+occAndItem :: [a] -> [b] -> [(a, b)]
+occAndItem [] _ = []
+occAndItem (x:xs) (y:ys) = (x,y) : occAndItem xs ys
 
-itemAndOcc :: (Ord a) => [a] -> [a] -> [(a, Int)]
-itemAndOcc xs = undefined
+histoHeight :: [(Int, a)] -> Int
+histoHeight [] = 0
+histoHeight ((n, v):xs) = n
+
+-- Values at a given row
+valuesAtY :: Int -> [(Int, a)] -> [a]
+valuesAtY _ [] = []
+valuesAtY x ((n, v):xs) 
+  | (x==n) = v : valuesAtY x xs
+  | otherwise  = valuesAtY x xs
+
+-- NOTE: try using sortBy and comparing
+-- sortBy :: (a -> a -> Ordering) -> [a] -> [a]
+-- comparing :: (Ord b) => (a -> b) -> a -> a -> Ordering
+orderByFst :: Ord a => [(Int, a)] -> [(Int, a)]
+orderByFst xs = reverse $ sortBy (compare `on` fst) xs 
+
+orderBySnd :: Ord a => [(Int, a)] -> [(Int, a)]
+orderBySnd xs = reverse $ sortBy (compare `on` snd) xs 
+
+-- If elem 0 [Int] -> "*"
+-- If elem 1 [Int] -> ++ "*"
+-- skips xs = map (\n -> everyNth n xs) [1..length xs]
+printRow :: [Int] -> [Int] -> String
+printRow [] _ = ""
+printRow _ [] = ""
+printRow (x:xs) ys
+  | elem x ys == True = "*" ++ printRow xs ys
+  | otherwise = " " ++ printRow xs ys
 
 histogram :: [Integer] -> String
 histogram [] = ""
-histogram (x:xs)
+histogram xs
   -- Sort the list DONE
   -- Find the most occuring item -> it will give us the height of the histogram DONE
-  -- Draft: (1, 4times), (2, 4times), (3, 2times) 
-  -- putStrLn " **\n"
-  -- putStrLn " **\n"
-  -- putStrLn " **\n"
-  -- putStrln " ***\n"
+  -- Draft: Make a list of tupples (a,b) where a = occurences and b = value DONE
+  -- tmp = occAndItem (countOcc xs) (rmDups xs)
+  -- vals = valuesAtY n $ orderByFst tmp 
+  -- if vals != null -> putStrLn "*" val1 putStrLn valn ...
   -- putStrLn "=========\n"
   -- putStrLn "0123456789"
   | otherwise = ""
