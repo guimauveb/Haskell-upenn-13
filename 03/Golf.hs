@@ -70,28 +70,37 @@ orderByFst xs = reverse $ sortBy (compare `on` fst) xs
 orderBySnd :: Ord a => [(Int, a)] -> [(Int, a)]
 orderBySnd xs = reverse $ sortBy (compare `on` snd) xs 
 
+-- Merge two lists into one
+merge :: (Ord a) => [a] -> [a] -> [a]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys) = x : y : merge xs ys
+
 -- If elem 0 [Int] -> "*"
 -- If elem 1 [Int] -> ++ "*"
 -- skips xs = map (\n -> everyNth n xs) [1..length xs]
-printRow :: [Int] -> [Int] -> String
+printRow :: [Integer] -> [Integer] -> String
 printRow [] _ = ""
 printRow _ [] = ""
 printRow (x:xs) ys
   | elem x ys == True = "*" ++ printRow xs ys
   | otherwise = " " ++ printRow xs ys
 
-histogram :: [Integer] -> String
-histogram [] = ""
-histogram xs
+
+histogram :: [Integer] -> [String]
+histogram [] = [""]
+histogram xs = 
   -- Sort the list DONE
   -- Find the most occuring item -> it will give us the height of the histogram DONE
   -- Draft: Make a list of tupples (a,b) where a = occurences and b = value DONE
-  -- tmp = occAndItem (countOcc xs) (rmDups xs)
-  -- vals = valuesAtY n $ orderByFst tmp 
-  -- if vals != null -> putStrLn "*" val1 putStrLn valn ...
+  -- tmp = occAndItem (countO(cc xs) (rmDups xs)
+  -- printRow valuesAtY n tmp : valuesAtY n+1 tmp
+  -- when decrementing Y, append n+1 valuesAtY as well
+    map (\n -> (printRow [0..9] $ valuesAtY n tmp)) $ reverse [0..histoHeight tmp]
+    where tmp = occAndItem (countOcc xs) (rmDups xs)
+  --
   -- putStrLn "=========\n"
   -- putStrLn "0123456789"
-  | otherwise = ""
 
 
 main = undefined
