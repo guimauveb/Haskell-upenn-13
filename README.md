@@ -2,7 +2,7 @@
 
 ### Week 1  - DONE
 ### Week 2  - DONE
-### Week 3  - DOING
+### Week 3  - DONE
 ### Week 4  - TODO
 ### Week 5  - TODO
 ### Week 6  - TODO
