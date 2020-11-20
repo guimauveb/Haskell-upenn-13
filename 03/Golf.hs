@@ -34,8 +34,8 @@ localMaxima (x:y:z:xs)
   | otherwise = tail
   where tail = localMaxima (y:z:xs)
                      
--- Exercice 3
 
+-- Exercice 3
 -- Helper function: removes duplicates from a list
 rmDups :: (Ord a) => [a] -> [a]
 rmDups = map head . group . sort
@@ -67,51 +67,39 @@ valuesAtY x ((n, v):xs)
 orderByFst :: Ord a => [(Int, a)] -> [(Int, a)]
 orderByFst xs = reverse $ sortBy (compare `on` fst) xs 
 
-orderBySnd :: Ord a => [(Int, a)] -> [(Int, a)]
-orderBySnd xs = reverse $ sortBy (compare `on` snd) xs 
-
 -- Merge two lists into one
 merge :: (Ord a) => [a] -> [a] -> [a]
 merge xs [] = xs
 merge [] ys = ys
 merge (x:xs) (y:ys) = x : y : merge xs ys
 
--- If elem 0 [Int] -> "*"
--- If elem 1 [Int] -> ++ "*"
 -- First argument is [0..9]
--- TODO - print \n
-printRow :: [Integer] -> [Integer] -> String
+printRow :: [Int] -> [Int] -> String
 printRow [] _ = ""
 printRow _ [] = ""
 printRow (x:xs) ys
   | elem x ys == True = "*" ++ printRow xs ys
   | otherwise = " " ++ printRow xs ys
 
--- If v appears n times, print a "*" at n for rows n through (n-1)
--- row n = row n + row (n+1)
--- populateRows valuesAtY [0..histoHeight] tmp
--- TODO - find an elegant way to do this for each y value
--- merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp) (merge (valuesAtY 2 tmp) (valuesAtY 1 tmp)))
+-- Fill missing values for yMax and x
+-- Example: zeroBoard 2 6 -> [(2,6), (1,6)]
+-- Allows to print a "*" for each row under x's yMax
+zeroBoard :: Int -> Int -> [(Int, Int)]
+zeroBoard yMax x = [(a,b) | a <- reverse $ [1..yMax], b <- [x]]
 
+-- Fill missing values fo each y and x
+zeroBoardAll :: [(Int,Int)] -> Int -> [(Int,Int)]
+zeroBoardAll xs y 
+  | (y==0) = [(y,y)]
+  | otherwise = (concat $ fmap (zeroBoard y) (valuesAtY y xs)) ++ zeroBoardAll xs (y-1) 
 
-histogram :: [Integer] -> [String]
-histogram [] = [""]
+histogram :: [Int] -> String
+histogram [] = ""
 histogram xs = 
-  -- Sort the list DONE
-  -- Find the most occuring item -> it will give us the height of the histogram DONE
-  -- Draft: Make a list of tupples (a,b) where a = occurences and b = value DONE
-  -- tmp = occAndValue (countO(cc xs) (rmDups xs)
-  -- printRow valuesAtY n tmp : valuesAtY n+1 tmp
-  -- when decrementing Y, append n+1 valuesAtY as well
-    map (\n -> (printRow [0..9] $ valuesAtY n tmp)) $ reverse [1..histoHeight tmp]
-    where tmp = occAndValue (countOcc xs) (rmDups xs)
+    concat $ (map (\y -> 
+      (printRow [0..9] $ valuesAtY y $ zeroBoardAll occurencesAndValues (histoHeight occurencesAndValues)) ++ "\n") 
+      $ reverse [1..histoHeight occurencesAndValues]) 
+      ++ ["==========\n0123456789\n"]
+    where occurencesAndValues = orderByFst $ occAndValue (countOcc xs) (rmDups xs)
 
--- Working solution: TODO - abstract this
--- y4 = printRow [0..9] $ valuesAtY 4 tmp
--- y3 = printRow [0..9] $ merge (valuesAtY 4 tmp) (valuesAtY 3 tmp)
--- y2 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp)  (valuesAtY 2 tmp))
--- y1 = printRow [0..9] $ merge (valuesAtY 4 tmp) (merge (valuesAtY 3 tmp) (merge (valuesAtY 2 tmp) (valuesAtY 1 tmp)))
-
--- putStrLn "=========\n"
--- putStrLn "0123456789"
 main = undefined
