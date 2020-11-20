@@ -64,8 +64,8 @@ valuesAtY x ((n, v):xs)
 -- NOTE: try using sortBy and comparing
 -- sortBy :: (a -> a -> Ordering) -> [a] -> [a]
 -- comparing :: (Ord b) => (a -> b) -> a -> a -> Ordering
-orderByFst :: Ord a => [(Int, a)] -> [(Int, a)]
-orderByFst xs = reverse $ sortBy (compare `on` fst) xs 
+orderByFirst :: Ord a => [(Int, a)] -> [(Int, a)]
+orderByFirst xs = reverse $ sortBy (compare `on` fst) xs 
 
 -- Merge two lists into one
 merge :: (Ord a) => [a] -> [a] -> [a]
@@ -82,24 +82,25 @@ printRow (x:xs) ys
   | otherwise = " " ++ printRow xs ys
 
 -- Fill missing values for yMax and x
--- Example: zeroBoard 2 6 -> [(2,6), (1,6)]
+-- Example: addMissingXs 2 6 -> [(2,6), (1,6)]
 -- Allows to print a "*" for each row under x's yMax
-zeroBoard :: Int -> Int -> [(Int, Int)]
-zeroBoard yMax x = [(a,b) | a <- reverse $ [1..yMax], b <- [x]]
+addMissingXs :: Int -> Int -> [(Int, Int)]
+addMissingXs yMax x = [(a,b) | a <- reverse $ [1..yMax], b <- [x]]
 
--- Fill missing values fo each y and x
-zeroBoardAll :: [(Int,Int)] -> Int -> [(Int,Int)]
-zeroBoardAll xs y 
-  | (y==0) = [(y,y)]
-  | otherwise = (concat $ fmap (zeroBoard y) (valuesAtY y xs)) ++ zeroBoardAll xs (y-1) 
+-- Fill missing values fo each (y,x)
+addMissingXsAll :: [(Int,Int)] -> Int -> [(Int,Int)]
+addMissingXsAll xs y 
+  | (y==0) = [(0,0)]
+  | otherwise = (concat $ fmap (addMissingXs y) (valuesAtY y xs)) ++ addMissingXsAll xs (y-1) 
 
 histogram :: [Int] -> String
-histogram [] = ""
+histogram [] = "Nothing to show."
 histogram xs = 
     concat $ (map (\y -> 
-      (printRow [0..9] $ valuesAtY y $ zeroBoardAll occurencesAndValues (histoHeight occurencesAndValues)) ++ "\n") 
+      (printRow [0..9] $ valuesAtY y $ addMissingXsAll occurencesAndValues (histoHeight occurencesAndValues)) ++ "\n") 
       $ reverse [1..histoHeight occurencesAndValues]) 
       ++ ["==========\n0123456789\n"]
-    where occurencesAndValues = orderByFst $ occAndValue (countOcc xs) (rmDups xs)
+    where occurencesAndValues = orderByFirst $ occAndValue (countOcc xs) (rmDups xs)
 
 main = undefined
+
