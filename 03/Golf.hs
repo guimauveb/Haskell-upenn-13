@@ -93,14 +93,35 @@ addMissingXsAll xs y
   | (y==0) = [(0,0)]
   | otherwise = (concat $ fmap (addMissingXs y) (valuesAtY y xs)) ++ addMissingXsAll xs (y-1) 
 
-histogram :: [Int] -> String
-histogram [] = "Nothing to show."
-histogram xs = 
-    concat $ (map (\y -> 
-      (printRow [0..9] $ valuesAtY y $ addMissingXsAll occurencesAndValues (histoHeight occurencesAndValues)) ++ "\n") 
-      $ reverse [1..histoHeight occurencesAndValues]) 
-      ++ ["==========\n0123456789\n"]
-    where occurencesAndValues = orderByFirst $ occAndValue (countOcc xs) (rmDups xs)
+-- histogram :: [Int] -> String
+-- histogram [] = "Nothing to show."
+-- histogram xs = 
+--     concat $ (map (\y -> 
+--       (printRow [0..9] $ valuesAtY y $ addMissingXsAll occurencesAndValues yMax) ++ "\n") $ reverse [1..yMax]) 
+--       ++ ["==========\n0123456789\n"]
+--     where occurencesAndValues = orderByFirst $ occAndValue (countOcc xs) (rmDups xs)
+--           yMax = (histoHeight occurencesAndValues)
 
-main = undefined
+-------------------------------------------------------------------------------------------------------------------
+-- Much better and elegant solution (from https://github.com/OctaviPascual/cis194-IntroductionToHaskell/tree/master/homework-03)
+-- Count the occurence of a given number in the list
+count :: Eq a => a -> [a] -> Int
+count x = length . filter (== x)
+
+
+-- Generate as many stars as there are occurences of a given number and fill the rest with blanks
+bar :: Int -> Int -> String
+bar f maxF = take maxF $ replicate f '*' ++ repeat ' ' 
+
+-- Now transform this horizontal notation to a vertical notation by rotating the bars 90° clockwise.
+histogram :: [Integer] -> String
+histogram xs = unlines $ rotate bars ++ legend
+  where frequencies = [count i xs | i <- [0..9]]
+        maxF = maximum frequencies
+        bars = [bar f maxF | f <- frequencies]
+        rotate = reverse . transpose
+        legend = ["==========", "0123456789"]
+
+
+
 
